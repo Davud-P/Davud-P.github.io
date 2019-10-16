@@ -87,7 +87,7 @@ c     OSUB outputs the microclimate calculations.
      &microinput1,soilprop1,PE1,KS1,BB1,BD1,L1,soilinit1,DD1
 
       double precision C,DEP,DTAU,ERR1,H,OUT,PAR,PTWET,SABNEW,soildp,
-     & airdp
+     & airdp,ZH,D0
       double precision T,TD,TI,TIME,TIMEF,WORK,shayd,altt,MAXSHD,WC
      & ,viewf
       double precision itair,icld,iwind,irelhum,rainfall,surflux,PE,KS
@@ -124,7 +124,7 @@ c     OSUB outputs the microclimate calculations.
       CHARACTER(12) FNAME
 
       DIMENSION snownode(10),snode(10),qphase(10)
-      DIMENSION microinput1(60)
+      DIMENSION microinput1(62)
       DIMENSION soilprop(10,5),soilprop1(10,5),moist(10)
       DIMENSION DEPS(21),curmoist2(18)
       DIMENSION TIMINS(4),TIMAXS(4)
@@ -172,6 +172,7 @@ c    Variable soil properties data from Iomet1
       COMMON/WIOMT2/RUF
       Common/Hyte/Usrhyt
       COMMON/DMYCRO/Z01,Z02,ZH1,ZH2
+      COMMON/CMYCRO/ZH,D0
       COMMON/NICHEMAPRIO/SLE,ERR,soilprop,surflux
       common/moistcom/moist,ep
       COMMON/ENDS/JULSTND
@@ -251,49 +252,53 @@ C    INITIALIZING MONTH OF YEAR COUNTER
 c    INITIALIZING DATAKY COUNTER
       CNT=1      
       minsnow=2.
-      QFREZE=0.
-      xtrain=0.
+      QFREZE=0.D0
+      xtrain=0.D0
       M=0
-      qphase(:)=0.
-      sumphase=0.
-      sumphase2(:)=0.
-      depp(:)=0.
-      dep(:)=0.
-      curmoist2(:)=0.
-      TI(:)=0.
-      TD(:)=0.
-      out(:)=0.
-      density(:)=0.
-      spheat(:)=0.
-      thconduct(:)=0.
-      snowhr(:)=0.
-      metout1(:,:)=0.
-      shadmet1(:,:)=0.
-      soil1(:,:)=0.
-      shadsoil1(:,:)=0.
-      soilmoist1(:,:)=0.
-      shadmoist1(:,:)=0.
-      humid1(:,:)=0.
-      shadhumid1(:,:)=0.
-      soilpot1(:,:)=0.
-      shadpot1(:,:)=0.
-      metout(:,:)=0.
-      shadmet(:,:)=0.
-      soil(:,:)=0.
-      shadsoil(:,:)=0.
-      soilmoist(:,:)=0.
-      shadmoist(:,:)=0.
-      humid(:,:)=0.
-      shadhumid(:,:)=0.
-      soilpot(:,:)=0.
-      shadpot(:,:)=0.
-      sunsnow(:,:)=0.
-      shdsnow(:,:)=0.
-      plant(:,:)=0.
-      shadplant(:,:)=0.
-      DRLAMBDA(:,:)=0.
-      DRRLAMBDA(:,:)=0.
-      SRLAMBDA(:,:)=0.
+      qphase(:)=0.D0
+      sumphase=0.D0
+      sumphase2(:)=0.D0
+      depp(:)=0.D0
+      dep(:)=0.D0
+      curmoist2(:)=0.D0
+      TI(:)=0.D0
+      TD(:)=0.D0
+      out(:)=0.D0
+      density(:)=0.D0
+      spheat(:)=0.D0
+      thconduct(:)=0.D0
+      snowhr(:)=0.D0
+      metout1(:,:)=0.D0
+      shadmet1(:,:)=0.D0
+      soil1(:,:)=0.D0
+      shadsoil1(:,:)=0.D0
+      soilmoist1(:,:)=0.D0
+      shadmoist1(:,:)=0.D0
+      humid1(:,:)=0.D0
+      shadhumid1(:,:)=0.D0
+      soilpot1(:,:)=0.D0
+      shadpot1(:,:)=0.D0
+      sunsnow1(:,:)=0.D0
+      shdsnow1(:,:)=0.D0
+      plant1(:,:)=0.D0
+      shadplant1(:,:)=0.D0
+      metout(:,:)=0.D0
+      shadmet(:,:)=0.D0
+      soil(:,:)=0.D0
+      shadsoil(:,:)=0.D0
+      soilmoist(:,:)=0.D0
+      shadmoist(:,:)=0.D0
+      humid(:,:)=0.D0
+      shadhumid(:,:)=0.D0
+      soilpot(:,:)=0.D0
+      shadpot(:,:)=0.D0
+      sunsnow(:,:)=0.D0
+      shdsnow(:,:)=0.D0
+      plant(:,:)=0.D0
+      shadplant(:,:)=0.D0
+      DRLAMBDA(:,:)=0.D0
+      DRRLAMBDA(:,:)=0.D0
+      SRLAMBDA(:,:)=0.D0
 c    Unpacking user input from R
       julnum=int(microinput1(1))
 
@@ -308,8 +313,8 @@ c    Unpacking user input from R
        snownode(7)=200
        snownode(8)=300
        lastday=1
-       daysincesnow=0.
-       snowage=0.
+       daysincesnow=0.D0
+       snowage=0.D0
       endif
       do 1920 i=1,10
        soilinit1(i)=soilinit1(1)
@@ -322,10 +327,13 @@ c    Unpacking user input from R
 
       tides=tides1
       solonly=int(microinput1(60))
+      ZH=microinput1(61)*100. ! Converting to cm
+      D0=microinput1(62)*100. ! Converting to cm
+      
 c    do 901 i=1,2
 c    julstnd(i)=julstnd1(i)
 c901    continue
-      RUF=microinput1(2)
+      RUF=microinput1(2)*100. ! Converting to cm
       SLES=SLES1
       soilprop=soilprop1
       SLE=SLES(1)
@@ -334,7 +342,7 @@ c901    continue
       rain=rain1
       tannulrun=tannulrun1
       do 9191 i=1,25*nn2
-       snowhr(i)=0.
+       snowhr(i)=0.D0
 9191  continue
       moists=max(moists1,0.01D+0)
       moist(1:10)=max(moists1(1:10,1),0.01D+0)
@@ -358,7 +366,7 @@ c901    continue
       snowdens=microinput1(28)
       snowmelt=microinput1(29)
       undercatch=microinput1(30)
-      condep=0.
+      condep=0.D0
       rainmult=microinput1(31)
       runshade=int(microinput1(32))
       PE=PE1
@@ -420,10 +428,10 @@ c    WRITE(I2,*)i,' ',j,' ',Thconds(i,j),' ',Thconds1(i,j)
       Nodes(i,j)=int(Nodes1(i,j))
 906    continue
 905   continue
-      Z01=microinput1(7)
-      Z02=microinput1(8)
-      ZH1=microinput1(9)
-      ZH2=microinput1(10)
+      Z01=microinput1(7)*100.
+      Z02=microinput1(8)*100.
+      ZH1=microinput1(9)*100.
+      ZH2=microinput1(10)*100.
 
 
       IDAYST=int(microinput1(11))
@@ -686,18 +694,10 @@ c    Kearney changed this for daily simulations
            ND = 3
       endif
 
-C     Converting RUF (m) to cm for Microclimate calculations
-      RUF = RUF * 100.
       par(6) = RUF
       PAR(12) = SLE
       PAR(10) = ERR
       PAR(5) = microinput1(5)*100.
-
-C    Convert to cm, since program Micr2007 computes in cm, min, cal
-      Z01 = Z01*100.
-      Z02 = Z02*100.
-      ZH1 = ZH1*100.
-      ZH2 = ZH2*100.
 
 C     SET UP SOIL NODES, DEPTHS, AIR NODES, HEIGHTS FOR MICROMET
 C    SETTING DEFAULT SOIL (NON) AND AIR NODES (NAN) HEIGHTS & DEPTHS
@@ -755,7 +755,7 @@ C       INSERTING DEFAULT OUTPUT VARIABLES TO BE PRINTED
       NDEP=10
 C     ZEROING WORK, DEPTH AND OUTPUT ARRAYS
       DO 24 I=1,560
- 24   WORK(I)=0.
+ 24   WORK(I)=0.D0
       DO 25 I = 1,100
    25   OUT(I) = 0.0
       IPRINT=1
@@ -763,10 +763,11 @@ C     ZEROING WORK, DEPTH AND OUTPUT ARRAYS
 C    ***********************************************************
       errcount=0
 200   CONTINUE
+      rain=rain1
       LAI=LAIs(DOY)
       TD(10)=TDSS(DOY)
       TD(11)=TDSS(DOY)
-      TI(10)=0.
+      TI(10)=0.D0
       TI(11)=1440.
       if(int(HOURLY).eq.1)then
        DOYS=(DOY)*24-23
@@ -900,7 +901,7 @@ C        MAX. SHADE BOUNDING CONDITION
               SHAYD=MAXSHADES(DOY)-0.1
           ENDIF
           MAXSHD = MAXSHADES(DOY)
-          maxsnode1=0. ! reset snow settings
+          maxsnode1=0.D0 ! reset snow settings
           do 2202 i=1,8
            snode(i)=0
 2202      continue
@@ -926,8 +927,8 @@ C      NEED SOME RESET OF NUMRUN VALUE TO EITHER DO REPEAT DAY WITH NEW SHADE VA
 C    CALL THE PREDICTOR-CORRECTOR NUMBERICAL INTEGRATOR TO DO EACH DAY FOR SET VALUES
       CALL SFODE
       if(microdaily.eq.1)then
-         ND=1
-      do 101 i=1,ii
+       ND=1
+       do 101 i=1,ii
         soilinit1(i)=work(520+i)
 101    continue
       endif
@@ -999,6 +1000,7 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
         if(writecsv.eq.1)then
          close (i3)
          close (i10)
+         close (i7)         
          if(lamb.eq.1)then
           close (i97)
           close (i98)
@@ -1012,6 +1014,7 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
           close (i101)
          endif
          if(runshade.eq.1)then
+          close (i8)
           close (i11)
           close (i12)
           if(runmoist.eq.1)then
@@ -1033,35 +1036,63 @@ C    LOOPING FOR THE SECOND DAY WITH MAX SHADE
        ENDIF
       ENDIF
 
-C    CHECK FOR THE END OF A YEAR, MONTH COUNTER INCREMENTED IN OUTPUT SUBROUTINE OSUB
+C    CHECK FOR THE END OF A YEAR, DAY COUNTER INCREMENTED IN OUTPUT SUBROUTINE OSUB
       ENDMON = JULNUM + 1
       IF (DOY.EQ.ENDMON)THEN
-        NUMRUN = 2
-        DOY = 1
-        GO TO 200
-      ENDIF
-
-      DO 3002 I=1,N
- 3002 T(I)=WORK(I+520)
-
-C    DO ANOTHER DAY
-      GO TO 200
-
-      if(writecsv.eq.1)then
-       close (i3)
-       close (i10)
-       close (i91)
-       close (i92)
-       close (i7)
-       if(runshade.eq.1)then
-        close (i11)
-        close (i12)
-        close (i93)
-        close (i94)
-        close (i8)
-       endif
-      endif
-      DEALLOCATE(SLES,RAIN,TIDES,metout
+       if(runshade.eq.0)then
+        do 9101 j=1,19
+         do 9091 i=1,24*julnum
+          metout1(i,j)=metout(i,j)
+9091     continue
+         i=1
+9101    continue
+        do 9121 j=1,12
+         do 9111 i=1,24*julnum
+          soil1(i,j)=soil(i,j)
+          soilmoist1(i,j)=soilmoist(i,j)
+          humid1(i,j)=humid(i,j)
+          soilpot1(i,j)=soilpot(i,j)
+9111     continue
+         i=1
+9121    continue
+        do 9161 j=1,11
+         do 9151 i=1,24*julnum
+          sunsnow1(i,j)=sunsnow(i,j)
+9151     continue
+         i=1
+9161    continue
+        do 9201 j=1,14
+         do 9171 i=1,24*julnum
+          plant1(i,j)=plant(i,j)
+9171     continue
+         i=1
+9201    continue
+        do 9131 j=1,113
+         do 9141 i=1,24*julnum
+          DRLAMBDA1(i,j)=DRLAMBDA(i,j)
+          DRRLAMBDA1(i,j)=DRRLAMBDA(i,j)
+          SRLAMBDA1(i,j)=SRLAMBDA(i,j)
+9141     continue
+         i=1
+9131    continue
+        if(writecsv.eq.1)then
+         close (i3)
+         close (i10)
+         close (i7)         
+         if(lamb.eq.1)then
+          close (i97)
+          close (i98)
+          close (i99)
+         endif
+         if(runmoist.eq.1)then
+          close (i91)
+          close (i92)
+          close (i95)
+          close (i100)
+          close (i101)
+         endif
+        endif
+        DEALLOCATE(SLES,RAIN,TIDES,metout
      &,shadmet,soil,shadsoil,soilmoist,shadmoist
      &,soilpot,shadpot,humid,shadhumid,plant,shadplant,
      &maxshades,minshades,CCMAXX,CCMINN,RHMAXX,RHMINN
@@ -1069,5 +1100,21 @@ C    DO ANOTHER DAY
      &,REFLS,moists,intrvls,snowhr,nodes,TDSS,
      &TINS,TARS,RELS,CLDS,VELS,SOLS,ZENS,ZSLS,LAIs,
      &PCTWET,julday,rainhr,DRLAMBDA,DRRLAMBDA,SRLAMBDA)
+        RETURN
+       else
+        NUMRUN = 2
+        DOY = 1
+        errcount=0
+        rain=rain1! reset rain in case set to zero in osub to escape an instability
+        GO TO 200
+       endif
+      ENDIF
+
+      DO 3002 I=1,N
+ 3002 T(I)=WORK(I+520)
+      errcount=0
+      rain=rain1! reset rain in case set to zero in osub to escape an instability
+C    DO ANOTHER DAY
+      GO TO 200
       RETURN
       END

@@ -1,16 +1,3 @@
----
-title: "Monthly example of inputs and outputs of the NicheMapR microclimate model"
-author: "Michael R. Kearney"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Microclimate Model Monthly Input Example}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
----
-
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
  eval = TRUE

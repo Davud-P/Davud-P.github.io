@@ -60,6 +60,8 @@
 #' \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
 #' \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 #' \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
+#' \code{ZH}{ = 0, heat transfer roughness height (m) for Campbell and Norman air temperature/wind speed profile (invoked if greater than 1, 0.02 * canopy height in m if unknown)}\cr\cr
+#' \code{D0}{ = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)}\cr\cr
 #' \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
 #' \code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 #' \code{ZH1}{ = 0, Top of (1st) segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
@@ -311,6 +313,8 @@ micro_global <- function(
   writecsv = 0,
   ERR = 1.5,
   RUF = 0.004,
+  ZH = 0,
+  D0 = 0,
   EC = 0.0167238,
   SLE = 0.95,
   Thcond = 2.5,
@@ -933,36 +937,36 @@ micro_global <- function(
     ZH2 <- 0 # 2nd segment, height above surface(m)
 
     # hourly option set to 0, so make empty vectors
-    hourly=0
-    rainhourly=0
-    TAIRhr=rep(0,24*ndays)
-    RHhr=rep(0,24*ndays)
-    WNhr=rep(0,24*ndays)
-    CLDhr=rep(0,24*ndays)
-    SOLRhr=rep(0,24*ndays)
-    RAINhr=rep(0,24*ndays)
-    ZENhr=rep(-1,24*ndays)
-    IRDhr=rep(-1,24*ndays)
+    hourly<-0
+    rainhourly<-0
+    TAIRhr<-rep(0,24*ndays)
+    RHhr<-rep(0,24*ndays)
+    WNhr<-rep(0,24*ndays)
+    CLDhr<-rep(0,24*ndays)
+    SOLRhr<-rep(0,24*ndays)
+    RAINhr<-rep(0,24*ndays)
+    ZENhr<-rep(-1,24*ndays)
+    IRDhr<-rep(-1,24*ndays)
     # microclimate input parameters list
-    microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly)
+    microinput<-c(ndays,RUF,ERR,Usrhyt,Refhyt,Numtyps,Z01,Z02,ZH1,ZH2,idayst,ida,HEMIS,ALAT,AMINUT,ALONG,ALMINT,ALREF,slope,azmuth,ALTT,CMH2O,microdaily,tannul,EC,VIEWF,snowtemp,snowdens,snowmelt,undercatch,rainmult,runshade,runmoist,maxpool,evenrain,snowmodel,rainmelt,writecsv,densfun,hourly,rainhourly,lamb,IUV,RW,PC,RL,SP,R1,IM,MAXCOUNT,IR,message,fail,snowcond,intercept,grasshade,solonly,ZH,D0)
 
-    doy1=matrix(data = 0., nrow = ndays, ncol = 1)
-    SLES1=matrix(data = 0., nrow = ndays, ncol = 1)
-    MAXSHADES1=matrix(data = 0., nrow = ndays, ncol = 1)
-    MINSHADES1=matrix(data = 0., nrow = ndays, ncol = 1)
-    TMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-    TMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-    CCMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-    CCMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-    RHMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-    RHMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-    WNMAXX1=matrix(data = 0., nrow = ndays, ncol = 1)
-    WNMINN1=matrix(data = 0., nrow = ndays, ncol = 1)
-    REFLS1=matrix(data = 0., nrow = ndays, ncol = 1)
-    PCTWET1=matrix(data = 0., nrow = ndays, ncol = 1)
-    RAINFALL1=matrix(data = 0, nrow = ndays, ncol = 1)
-    tannul1=matrix(data = 0, nrow = ndays, ncol = 1)
-    moists1=matrix(data = 0., nrow = 10, ncol = ndays)
+    doy1<-matrix(data <- 0., nrow = ndays, ncol = 1)
+    SLES1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    MAXSHADES1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    MINSHADES1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    TMAXX1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    TMINN1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    CCMAXX1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    CCMINN1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    RHMAXX1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    RHMINN1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    WNMAXX1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    WNMINN1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    REFLS1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    PCTWET1<-matrix(data = 0., nrow = ndays, ncol = 1)
+    RAINFALL1<-matrix(data = 0, nrow = ndays, ncol = 1)
+    tannul1<-matrix(data = 0, nrow = ndays, ncol = 1)
+    moists1<-matrix(data = 0., nrow = 10, ncol = ndays)
     doy1[1:ndays]<-doy
     SLES1[1:ndays]<-SLES
     MAXSHADES1[1:ndays]<-MAXSHADES

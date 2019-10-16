@@ -193,15 +193,15 @@ c     # # volume fraction of gas
        if(phi_g.lt.0)then
         phi_g=0
        endif
-c     # eq 8.17 Campbell and Norman
+c     # eq 8.17 Campbell and Norman 1988
        f_w=1/(1+(theta/theta_0)**(-4.))
-c     # eq 8.17 Campbell and Norman, using temperature-specific q
+c     # eq 8.17 Campbell and Norman 1988, using temperature-specific q
        f_w=1/(1+(theta/theta_0)**(-1.*q))
-c    # eq 8.18 Campbell and Norman
+c    # eq 8.18 Campbell and Norman 1988
        k_g=k_a+lambda*deltax*hr*f_w*rho_hat*D_v/(p_a-e_a)
-c     # eq 8.19 Campbell and Norman
+c     # eq 8.19 Campbell and Norman 1988
        k_f=k_g+f_w*(k_w-k_g)
-c    # 0.1 for mineral soils, 0.33 for organic, p 125, Campbell and Norman
+c    # 0.1 for mineral soils, 0.33 for organic, p 125, Campbell and Norman 1988
        g_a=0.1
 c     # p 125, Campbell and Norman
        g_c=1-2*g_a
@@ -259,14 +259,14 @@ C     1 kg/m3 * 1000g/1 kg * 1 m3/1000000.
      &    (((snode(i).lt.1e-8).and.(snode(min(8,i+1)).gt.0))))then
           Density(i)=snowdens
          else
-          Density(i)=0.
+          Density(i)=0.D0
          endif
 4       continue
        else
         do 5 i=1,8 ! no snow, give all snow nodes (top 8) the value of the soil layer for conductivity and specific heat and zero for density
          Thconduct(i)=Thconduct(9)
          Spheat(i)=Spheat(9)
-         Density(i)=0
+         Density(i)=0.D0
 5       continue
        endif
       endif

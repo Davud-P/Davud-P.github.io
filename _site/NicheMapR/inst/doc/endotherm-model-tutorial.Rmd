@@ -1,16 +1,3 @@
----
-title: "Endotherm Model Tutorial II: example simulations"
-author: "Michael Kearney"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Endotherm Model Tutorial}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
----
-
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
  eval = TRUE, tidy.opts=list(width.cutoff=60), tidy=TRUE  

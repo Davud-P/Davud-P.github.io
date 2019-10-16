@@ -5,7 +5,7 @@
 \alias{micro_ncep}
 \title{NCEP implementation of the microclimate model, with package microclima computing hourly forcing.}
 \usage{
-micro_clima(loc = 'Galapagos', dstart = "01/01/2017", dfinish = "31/12/2017",
+micro_ncep(loc = c(-91.415669, -0.287145), dstart = "01/01/2019", dfinish = "31/07/2019",
 REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 Usrhyt = 0.01, ...)
 }
@@ -97,6 +97,8 @@ An implementation of the NicheMapR microclimate model that uses the RNCEP packag
 \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
 \code{Refhyt}{ = 2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
+\code{ZH}{ = 0, heat transfer roughness height (m) for Campbell and Norman air temperature/wind speed profile (invoked if greater than 1, 0.02 * canopy height in m if unknown)}\cr\cr
+\code{D0}{ = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)}\cr\cr
 \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
 \code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 \code{ZH1}{ = 0, Top of (1st) segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
@@ -266,7 +268,7 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 library(NicheMapR)
 dstart <- "02/01/2017"
 dfinish <- "30/12/2017"
-loc <- c(-5.3, 50.13) # Galapagos
+loc <- c(-91.415669, -0.287145) # Isla Fernandina Galapagos
 micro<-micro_ncep(loc = loc, dstart = dstart, dfinish = dfinish)
 
 metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade

@@ -4,37 +4,37 @@
 \alias{GEOM}
 \title{GEOM}
 \usage{
-GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, GMULT, GMREF, DHARA,
-  RHOARA, PTCOND, BIRD, MAMMAL, ORIENT)
+GEOM(AMASS, ANDENS, FATPCT, POSTUR, ZFUR, SUBQFAT, SHAPE_B, SHAPE_B_REF,
+  SHAPE_C, DHARA, RHOARA, PTCOND, SAMODE, ORIENT)
 }
 \arguments{
-\item{AMASS}{A}
+\item{AMASS}{mass, kg}
 
-\item{ANDENS}{A}
+\item{ANDENS}{volume, kg/m3}
 
-\item{FATPCT}{A}
+\item{FATPCT}{fat percentage, \%}
 
-\item{POSTUR}{A}
+\item{POSTUR}{shape, -}
 
-\item{ZFUR}{A}
+\item{ZFUR}{fur depth, m}
 
-\item{SUBQFAT}{A}
+\item{SUBQFAT}{subcutaneous fat presence, -}
 
-\item{GMULT}{A}
+\item{SHAPE_B}{multiplier on long axis for shape change, -}
 
-\item{GMREF}{A}
+\item{SHAPE_B_REF}{reference multiplier on long axis for shape change, -}
 
-\item{DHARA}{A}
+\item{SHAPE_C}{multiplier on width relative to height for plate shape change, -}
 
-\item{RHOARA}{A}
+\item{DHARA}{hair diameter, m}
 
-\item{PTCOND}{A}
+\item{RHOARA}{hair density, 1/m2}
 
-\item{BIRD}{A}
+\item{PTCOND}{percentage of surface area conducting to substrate, \%}
 
-\item{MAMMAL}{A}
+\item{SAMODE}{surface area mode, -}
 
-\item{ORIENT}{A}
+\item{ORIENT}{orientation to solar, -}
 }
 \description{
 R wrapper for Fortran binary of GEOM (endotherm model)

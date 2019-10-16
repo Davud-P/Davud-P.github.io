@@ -5,7 +5,7 @@
 \alias{micro_aust}
 \title{Australian implementation of the microclimate model.}
 \usage{
-micro_aust(loc = "Melbourne, Australia", ystart = 1990, yfinish = 1990,
+micro_aust(loc = c(130.5686, -22.6523), ystart = 1990, yfinish = 1990,
 REFL = 0.15, slope = 0, aspect = 0, DEP = c(0, 2.5,  5,  10,  15,  20,  30,  50,  100,  200), minshade = 0, maxshade = 90,
 Usrhyt = 0.01, ...)
 }
@@ -85,7 +85,6 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{adiab_cor}{ = 1, use adiabatic lapse rate correction? 1=yes, 0=no}\cr\cr
 \code{warm}{ = 0, uniform warming, °C}\cr\cr
 \code{spatial}{ = "c:/Australian Environment/", choose location of terrain data}\cr\cr
-\code{vlsci}{ = 0, running on the VLSCI system? 1=yes, 0=no}\cr\cr
 \code{opendap}{ = 1, query met grids via opendap}\cr\cr
 \code{soilgrids}{ = 0, query soilgrids.org database for soil hydraulic properties?}\cr\cr
 \code{message}{ = 0, allow the Fortran integrator to output warnings? (1) or not (0)}\cr\cr
@@ -95,6 +94,8 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 \code{ERR}{ = 1.5, Integrator error tolerance for soil temperature calculations}\cr\cr
 \code{Refhyt}{ = 1.2, Reference height (m), reference height at which air temperature, wind speed and relative humidity input data are measured}\cr\cr
 \code{RUF}{ = 0.004, Roughness height (m), e.g. smooth desert is 0.0003, closely mowed grass may be 0.001, bare tilled soil 0.002-0.006, current allowed range: 0.00001 (snow) - 0.02 m.}\cr\cr
+\code{ZH}{ = 0, heat transfer roughness height (m) for Campbell and Norman air temperature/wind speed profile (invoked if greater than 1, 0.02 * canopy height in m if unknown)}\cr\cr
+\code{D0}{ = 0, zero plane displacement correction factor (m) for Campbell and Norman air temperature/wind speed profile (0.6 * canopy height in m if unknown)}\cr\cr
 \code{Z01}{ = 0, Top (1st) segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used)}\cr\cr
 \code{Z02}{ = 0, 2nd segment roughness height(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
 \code{ZH1}{ = 0, Top of (1st) segment, height above surface(m) - IF NO EXPERIMENTAL WIND PROFILE DATA SET THIS TO ZERO! (then RUF and Refhyt used).}\cr\cr
@@ -152,7 +153,7 @@ An implementation of the NicheMapR microclimate model that uses the AWAP daily w
 
 \strong{ Snow mode parameters:}
 
-\code{snowmodel}{ = 1, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
+\code{snowmodel}{ = 0, run the snow model 1=yes, 0=no (note that this may cause slower runs)}\cr\cr
 \code{snowtemp}{ = 1.5, Temperature (°C) at which precipitation falls as snow}\cr\cr
 \code{snowdens}{ = 0.375, snow density (mg/m3), overridden by densfun}\cr\cr
 \code{densfun}{ = c(0,0,0,0), slope and intercept of model of snow density as a linear function of snowpack age if first two values are nonzero, and following the exponential function of Sturm et al. 2010 J. of Hydromet. 11:1380-1394 if all values are non-zero; if it is c(0,0,0,0) then fixed density used}\cr\cr
@@ -264,16 +265,15 @@ drlam (direct solar), drrlam (direct Rayleigh solar) and srlam (scattered solar)
 ystart <- 2014
 yfinish <- 2015
 nyears <- yfinish - ystart + 1
-micro<-micro_aust(loc = 'Nyrripi, Northern Territory', ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
+loc <- c(130.5686, -22.6523) # Nyrripi, Northern Territory, Australia
+micro <- micro_aust(loc = loc, ystart = ystart, yfinish = yfinish, opendap = 1, elev = 0, runshade = 0) # run the model for the middle of the desert in Australia, using opendap
 
-metout<-as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
-soil<-as.data.frame(micro$soil) # soil temperatures, minimum shade
-soilmoist<-as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
+metout <- as.data.frame(micro$metout) # above ground microclimatic conditions, min shade
+soil <- as.data.frame(micro$soil) # soil temperatures, minimum shade
+soilmoist <- as.data.frame(micro$soilmoist) # soil temperatures, minimum shade
 
 # append dates
-tzone<-paste("Etc/GMT+",0,sep="")
-dates<-seq(ISOdate(ystart,1,1,tz=tzone)-3600*12, ISOdate((ystart+nyears),1,1,tz=tzone)-3600*13, by="hours")
-
+dates <- micro$dates
 metout <- cbind(dates,metout)
 soil <- cbind(dates,soil)
 soilmoist <- cbind(dates, soilmoist)
